@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import * as API from '../helpers/Api';
+import * as API from '../service/Api';
 import { SearchBar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
