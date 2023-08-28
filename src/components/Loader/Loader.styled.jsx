@@ -1,6 +1,6 @@
-import styled from '@emotion/styled';
+import styled from 'styled-components';
 
-export const LoaderContainer = styled.div`
+export const LoadDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;

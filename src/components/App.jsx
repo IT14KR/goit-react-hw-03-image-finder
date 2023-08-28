@@ -1,101 +1,120 @@
 import { Component } from 'react';
 import * as API from '../service/Api';
-import { SearchBar } from './SearchBar/SearchBar';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Searchbar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
-import { ToastContainer, toast, Slide } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { BtnLoadMore } from './LoadMoreBtn/LoadMoreBtn.styled';
+import Button from './Button/Button';
+import Modal from './Modal/Modal';
+import { AppDiv } from './App.styled';
 
 export class App extends Component {
   state = {
-    searchName: '',
     images: [],
-    currentPage: 1,
-    error: null,
     isLoading: false,
+    error: null,
+    query: '',
+    page: 1,
+    showModal: false,
+    selectedImage: null,
+    isLastPage: false,
     totalPages: 0,
   };
 
   componentDidUpdate(_, prevState) {
     if (
-      prevState.searchName !== this.state.searchName ||
-      prevState.currentPage !== this.state.currentPage
+      prevState.query !== this.state.query ||
+      prevState.page !== this.state.page
     ) {
-      this.addImages();
+      this.fetchImages();
     }
   }
 
   loadMore = () => {
     this.setState(prevState => ({
-      currentPage: prevState.currentPage + 1,
+      page: prevState.page + 1,
     }));
   };
 
-  handleSubmit = query => {
-    this.setState({
-      searchName: query,
-      images: [],
-      currentPage: 1,
-    });
-  };
+  fetchImages = async () => {
+    const { query, page } = this.state;
 
-  addImages = async () => {
-    const { searchName, currentPage } = this.state;
     try {
       this.setState({ isLoading: true });
+      const data = await API.getImages(query, page);
 
-      const data = await API.getImages(searchName, currentPage);
-
-      if (data.data.length === 0) {
-        toast.info('Sorry image not found...', {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+      if (data.hits.length === 0) {
+        toast.error('Sorry, there are no images matching your request...');
         return;
       }
 
       const normalizedImages = API.normalizedImages(data.hits);
 
-      this.setState(state => ({
-        images: [...state.images, ...normalizedImages],
-        isLoading: false,
+      this.setState(prevState => ({
+        images: [...prevState.images, ...normalizedImages],
+        isLastPage:
+          prevState.images.length + normalizedImages.length >= data.totalHits,
         error: null,
-        totalPages: Math.ceil(data.totalHits / 12),
+        totalPages: Math.ceil(data.totalHits / API.perPage),
       }));
     } catch (error) {
-      this.setState({
-        error: 'Something went wrong!',
-      });
+      this.setState({ error: error.message });
+      toast.error('Sorry, something went wrong.');
     } finally {
       this.setState({ isLoading: false });
     }
   };
 
+  handleSearchSubmit = query => {
+    if (this.state.query === query) {
+      return;
+    }
+
+    this.setState({
+      query: query,
+      page: 1,
+      images: [],
+      error: null,
+      isLastPage: false,
+    });
+  };
+
+  handleImageClick = image => {
+    this.setState({ selectedImage: image, showModal: true });
+  };
+
+  handleModalClose = () => {
+    this.setState({ selectedImage: null, showModal: false });
+  };
+
   render() {
-    const { images, isLoading, currentPage, totalPages } = this.state;
+    const { images, isLoading, error, showModal, selectedImage, isLastPage } =
+      this.state;
 
     return (
-      <div>
-        <ToastContainer transition={Slide} />
-        <SearchBar onSubmit={this.handleSubmit} />
-        {images.length > 0 ? (
-          <ImageGallery images={images} />
-        ) : (
-          <p
-            style={{
-              padding: 100,
-              textAlign: 'center',
-              fontSize: 30,
-            }}
-          >
-            No image in gallary
-          </p>
-        )}
+      <AppDiv>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={true}
+        />
+        <Searchbar onSubmit={this.handleSearchSubmit} />
+
+        {error && <p>Error: {error}</p>}
+
+        <ImageGallery images={images} onItemClick={this.handleImageClick} />
+
         {isLoading && <Loader />}
-        {images.length > 0 && totalPages !== currentPage && !isLoading && (
-          <BtnLoadMore onClick={this.loadMore} />
+
+        {!isLoading && images.length > 0 && !isLastPage && (
+          <Button onClick={this.loadMore} />
         )}
-      </div>
+
+        {showModal && (
+          <Modal image={selectedImage} onClose={this.handleModalClose} />
+        )}
+      </AppDiv>
     );
   }
 }

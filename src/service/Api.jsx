@@ -1,9 +1,7 @@
 import axios from 'axios';
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
-
 const API_KEY = '38630416-71dea153159697a7782c38894';
-
 export const perPage = 12;
 
 export const getImages = async (query, page) => {
@@ -14,6 +12,6 @@ export const getImages = async (query, page) => {
 };
 
 export const normalizedImages = imagesArray =>
-  imagesArray.map(({ id, webformatURL, largeImageURL }) => {
-    return { id, webformatURL, largeImageURL };
+  imagesArray.map(({ id, tags, webformatURL, largeImageURL }) => {
+    return { id, tags, webformatURL, largeImageURL };
   });

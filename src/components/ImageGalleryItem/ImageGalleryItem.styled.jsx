@@ -1,18 +1,20 @@
-import styled from '@emotion/styled';
+import styled from 'styled-components';
 
-export const Item = styled.li`
-  border-radius: 8px;
+export const ImageGalleryLi = styled.li`
+  border-radius: 15px;
+  height: 260px;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
 `;
 
-export const Img = styled.img`
+export const ImageGalleryItemImg = styled.img`
   width: 100%;
-  height: 230px;
+  height: 100%;
+  border-radius: 15px;
   object-fit: cover;
   transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 8px;
-
-  &:hover {
-    transform: scale(1.03);
+  :hover {
+    transform: scale(1.02);
     cursor: zoom-in;
   }
 `;

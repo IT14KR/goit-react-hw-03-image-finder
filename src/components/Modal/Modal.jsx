@@ -1,13 +1,18 @@
 import { Component } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
-import { ModalWindow, Overlay } from './Modal.styled';
+import { Overlay, ModalDiv, ModalDivImg } from './Modal.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
-export class Modal extends Component {
+export default class Modal extends Component {
+  static propTypes = {
+    selectedImage: PropTypes.string,
+    tags: PropTypes.string,
+    onClose: PropTypes.func,
+  };
   componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown); //
+    window.addEventListener('keydown', this.handleKeyDown);
     document.body.style.overflow = 'hidden';
   }
 
@@ -22,26 +27,25 @@ export class Modal extends Component {
     }
   };
 
-  handleBackdropClick = event => {
-    if (event.currentTarget === event.target) {
+  handleClick = event => {
+    if (event.target === event.currentTarget) {
       this.props.onClose();
     }
   };
 
   render() {
-    const { largeImageURL, tags } = this.props;
+    const { image } = this.props;
 
     return createPortal(
-      <Overlay onClick={this.handleBackdropClick}>
-        <ModalWindow>
-          <img src={largeImageURL} alt={tags} />
-        </ModalWindow>
+      <Overlay onClick={this.handleClick}>
+        <ModalDiv>
+          <ModalDivImg img src={image.largeImageURL} alt={image.tags} />
+        </ModalDiv>
       </Overlay>,
       modalRoot
     );
   }
 }
-
 Modal.propTypes = {
   largeImageURL: PropTypes.string.isRequired,
   tags: PropTypes.string.isRequired,
