@@ -23,13 +23,11 @@ class ImageItem extends Component {
         <Item>
           <Img
             src={image.webformatURL}
-            alt={image.tags}
             onClick={this.toggleModal}
           />
           {showModal && (
             <Modal
               largeImageURL={image.largeImageURL}
-              tags={image.tags}
               onClose={this.toggleModal}
             />
           )}
