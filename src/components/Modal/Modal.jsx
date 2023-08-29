@@ -7,9 +7,11 @@ const modalRoot = document.querySelector('#modal-root');
 
 export default class Modal extends Component {
   static propTypes = {
-    selectedImage: PropTypes.string,
-    tags: PropTypes.string,
-    onClose: PropTypes.func,
+    image: PropTypes.shape({
+      largeImageURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    }),
+    onClose: PropTypes.func.isRequired,
   };
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
@@ -39,15 +41,10 @@ export default class Modal extends Component {
     return createPortal(
       <Overlay onClick={this.handleClick}>
         <ModalDiv>
-          <ModalDivImg img src={image.largeImageURL} alt={image.tags} />
+          <ModalDivImg src={image.largeImageURL} alt={image.tags} />
         </ModalDiv>
       </Overlay>,
       modalRoot
     );
   }
 }
-Modal.propTypes = {
-  largeImageURL: PropTypes.string.isRequired,
-  tags: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired,
-};
