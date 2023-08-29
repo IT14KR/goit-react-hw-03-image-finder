@@ -7,11 +7,7 @@ export const ImageGallery = ({ images, onClick }) => {
   return (
     <ImageGalleryUl>
       {images.map(image => (
-        <ImageGalleryItem
-          key={image.id}
-          image={image}
-          onClick={onClick}
-        />
+        <ImageGalleryItem key={image.id} image={image} onItemClick={onClick} />
       ))}
     </ImageGalleryUl>
   );
@@ -25,5 +21,5 @@ ImageGallery.propTypes = {
       largeImageURL: PropTypes.string.isRequired,
     })
   ).isRequired,
-  onItemClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
 };

@@ -103,7 +103,7 @@ export class App extends Component {
 
         {error && <p>Error: {error}</p>}
 
-        <ImageGallery images={images} onItemClick={this.handleImageClick} />
+        <ImageGallery images={images} onClick={this.handleImageClick} />
 
         {isLoading && <Loader />}
 
